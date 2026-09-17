@@ -11,6 +11,7 @@ ENTITY_SET = os.environ.get("ENTITY_SET", "wikipedia")
 DATA_DIR = os.environ.get("REFINED_DATA_DIR", "/data/refined")
 USE_PRECOMPUTED_DESCRIPTIONS = os.environ.get("USE_PRECOMPUTED_DESCRIPTIONS", "true").lower() == "true"
 DEVICE = os.environ.get("REFINED_DEVICE", "cpu")
+TOP_K_ENTITIES = int(os.environ.get("TOP_K_ENTITIES", "5"))
 
 refined = Refined.from_pretrained(
     model_name=MODEL_NAME,
@@ -42,20 +43,32 @@ def entity_to_json(entity):
     }
 
 
+def date_to_json(date):
+    if date is None:
+        return None
+    return {
+        "text": date.text,
+        "day": date.day,
+        "month": date.month,
+        "year": date.year,
+        "known_format": date.known_format,
+    }
+
+
 def span_to_json(span: Span):
     top_entities = []
     if span.top_k_predicted_entities is not None:
         top_entities = [
             {**entity_to_json(e), "confidence": score}
             for e, score in span.top_k_predicted_entities
-        ]
+        ][:TOP_K_ENTITIES]
     return {
         "text": span.text,
         "start": span.start,
         "end": span.start + span.ln,
         "coarse_type": span.coarse_type,
         "mention_type": span.coarse_mention_type,
-        "date": str(span.date) if span.date is not None else None,
+        "date": date_to_json(span.date),
         "confidence": span.entity_linking_model_confidence_score,
         "entity": entity_to_json(span.predicted_entity),
         "top_entities": top_entities,

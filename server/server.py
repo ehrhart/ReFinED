@@ -1,10 +1,13 @@
 import os
+import threading
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from refined.data_types.base_types import Span
 from refined.inference.processor import Refined
+
+_inference_lock = threading.Lock()
 
 MODEL_NAME = os.environ.get("MODEL_NAME", "wikipedia_model")
 ENTITY_SET = os.environ.get("ENTITY_SET", "wikipedia")
@@ -97,7 +100,8 @@ def health():
 @app.post("/annotate_text")
 def annotate_text(request: AnnotateTextRequest):
     try:
-        spans = refined.process_text(request.text)
+        with _inference_lock:
+            spans = refined.process_text(request.text)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
     return {"text": request.text, "spans": [span_to_json(s) for s in spans]}

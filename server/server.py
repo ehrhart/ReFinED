@@ -45,7 +45,10 @@ def entity_to_json(entity):
 def span_to_json(span: Span):
     top_entities = []
     if span.top_k_predicted_entities is not None:
-        top_entities = [entity_to_json(e) for e in span.top_k_predicted_entities[0] or []]
+        top_entities = [
+            {**entity_to_json(e), "confidence": score}
+            for e, score in span.top_k_predicted_entities
+        ]
     return {
         "text": span.text,
         "start": span.start,
@@ -60,6 +63,16 @@ def span_to_json(span: Span):
             {"id": type_id, "label": type_label, "confidence": type_confidence}
             for type_id, type_label, type_confidence in (span.predicted_entity_types or [])
         ],
+    }
+
+
+@app.get("/")
+def root():
+    return {
+        "service": "ReFinED entity linking",
+        "model": MODEL_NAME,
+        "entity_set": ENTITY_SET,
+        "endpoints": {"annotate": "POST /annotate_text", "health": "GET /health", "docs": "/docs"},
     }
 
 

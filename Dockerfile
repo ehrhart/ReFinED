@@ -8,7 +8,9 @@ ENV PYTHONUNBUFFERED=1 \
     MODEL_NAME=wikipedia_model \
     ENTITY_SET=wikipedia \
     USE_PRECOMPUTED_DESCRIPTIONS=true \
-    REFINED_DEVICE=cpu
+    REFINED_DEVICE=cpu \
+    UVICORN_WORKERS=6 \
+    TORCH_NUM_THREADS=4
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
@@ -31,4 +33,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "server.server:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD uvicorn server.server:app --host 0.0.0.0 --port 8000 --workers ${UVICORN_WORKERS:-1}

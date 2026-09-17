@@ -6,15 +6,18 @@ services:
     image: refined
     build: .
     ports:
-      - "8458:8000"
+      - "${REFINED_PORT:-8458}:8000"
     volumes:
       - refined-data:/data/refined
     environment:
-      - MODEL_NAME=wikipedia_model
-      - ENTITY_SET=wikipedia
-      - USE_PRECOMPUTED_DESCRIPTIONS=true
-      - REFINED_DEVICE=cpu
-    mem_limit: 32g
+      - MODEL_NAME=${MODEL_NAME:-wikipedia_model}
+      - ENTITY_SET=${ENTITY_SET:-wikipedia}
+      - USE_PRECOMPUTED_DESCRIPTIONS=${USE_PRECOMPUTED_DESCRIPTIONS:-true}
+      - REFINED_DEVICE=${REFINED_DEVICE:-cpu}
+      - UVICORN_WORKERS=${UVICORN_WORKERS:-6}
+      - TORCH_NUM_THREADS=${TORCH_NUM_THREADS:-4}
+      - TOP_K_ENTITIES=${TOP_K_ENTITIES:-5}
+    mem_limit: ${MEM_LIMIT:-32g}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]

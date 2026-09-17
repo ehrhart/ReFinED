@@ -1,11 +1,16 @@
 import os
 import threading
 
+import torch
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from refined.data_types.base_types import Span
 from refined.inference.processor import Refined
+
+_torch_num_threads = int(os.environ.get("TORCH_NUM_THREADS", "0"))
+if _torch_num_threads > 0:
+    torch.set_num_threads(_torch_num_threads)
 
 _inference_lock = threading.Lock()
 

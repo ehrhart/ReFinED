@@ -1,0 +1,14 @@
+numpy==1.23.5
+nltk>=3.5
+urllib3>=1.25.8
+Unidecode>=1.1.1
+ujson
+tqdm
+transformers==4.2.2
+lmdb>=1.0
+boto3
+botocore
+requests
+Cython
+fastapi
+uvicorn

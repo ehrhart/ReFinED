@@ -1,0 +1,24 @@
+volumes:
+  refined-data:
+
+services:
+  app:
+    image: refined
+    build: .
+    ports:
+      - "8458:8000"
+    volumes:
+      - refined-data:/data/refined
+    environment:
+      - MODEL_NAME=wikipedia_model_with_numbers
+      - ENTITY_SET=wikipedia
+      - USE_PRECOMPUTED_DESCRIPTIONS=true
+      - REFINED_DEVICE=cpu
+    mem_limit: 32g
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 45m

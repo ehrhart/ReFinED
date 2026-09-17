@@ -10,7 +10,7 @@ services:
     volumes:
       - refined-data:/data/refined
     environment:
-      - MODEL_NAME=wikipedia_model_with_numbers
+      - MODEL_NAME=wikipedia_model
       - ENTITY_SET=wikipedia
       - USE_PRECOMPUTED_DESCRIPTIONS=true
       - REFINED_DEVICE=cpu

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from refined.data_types.base_types import Span
 from refined.inference.processor import Refined
 
-MODEL_NAME = os.environ.get("MODEL_NAME", "wikipedia_model_with_numbers")
+MODEL_NAME = os.environ.get("MODEL_NAME", "wikipedia_model")
 ENTITY_SET = os.environ.get("ENTITY_SET", "wikipedia")
 DATA_DIR = os.environ.get("REFINED_DATA_DIR", "/data/refined")
 USE_PRECOMPUTED_DESCRIPTIONS = os.environ.get("USE_PRECOMPUTED_DESCRIPTIONS", "true").lower() == "true"
